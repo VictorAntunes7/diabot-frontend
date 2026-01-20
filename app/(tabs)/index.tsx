@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
  logo: {
-    width: 150, // Ajuste conforme o tamanho da sua imagem
+    width: 150, 
     height: 150,
     marginBottom: 10,
   },
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
     borderRadius: 25,
     paddingHorizontal: 20,
-    marginBottom: 10, // Diminuímos um pouco para o "esqueci" ficar perto
+    marginBottom: 10, 
     color: "#000",
   },
   forgotPasswordContainer: {
