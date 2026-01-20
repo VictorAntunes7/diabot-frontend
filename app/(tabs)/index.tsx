@@ -1,148 +1,73 @@
-import {
-  Image,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-export default function Index() {
+// Dados fictícios para os cards de notícias (Mock Data)
+const NEWS_DATA = [
+  { id: '1', title: 'Controle da glicemia precisão!', subtitle: 'Confira nossas novas dicas do dia.', icon: '🍎' },
+  { id: '2', title: 'Você sabia?', subtitle: 'Saúde bucal pode influenciar no controle do diabetes.', icon: '👄' },
+  { id: '3', title: 'Nova receita saudável', subtitle: 'Experimente nosso bolo sem açúcar!', icon: '🍰' },
+];
+
+export default function HomeScreen() {
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        
-        <View style={styles.card}>
-          <Image 
-            source={require("../../assets/images/logo.jpeg")} 
-            style={styles.logo} 
-            resizeMode="contain"
-          />
-          
-          <Text style={[styles.subtitle, { marginBottom: 2 }]}>
-            Bem-vindo(a) de volta!
-          </Text>
-          <Text style={styles.subtitle}>
-            Acesse sua conta para continuar.
-          </Text>
+    <View style={styles.container}>
+      {/* Cabeçalho com Logo */}
+      <View style={styles.header}>
+        <Image source={require("../../assets/images/logo.jpeg")} style={styles.miniLogo} resizeMode="contain" />
+      </View>
 
-          <TextInput 
-            style={styles.input} 
-            placeholder="Digite seu CPF" 
-            placeholderTextColor="#888"
-            keyboardType="numeric"
-          />
-
-          <TextInput 
-            style={styles.input} 
-            placeholder="Digite sua Senha" 
-            placeholderTextColor="#888"
-            secureTextEntry={true}
-          />
-
-          {/* Link para Esqueci minha senha */}
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Entrar</Text>
-          </TouchableOpacity>
-
-          {/* Seção de Cadastro */}
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupLabel}>É a sua primeira visita?</Text>
-            <TouchableOpacity style={styles.signupButton}>
-              <Text style={styles.signupButtonText}>cadastre-se</Text>
-            </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Indicador de Glicemia (Simulado por enquanto) */}
+        <View style={styles.glucoseContainer}>
+          <View style={styles.circularProgress}>
+            <Text style={styles.glucoseValue}>135</Text>
+            <Text style={styles.glucoseUnit}>mg/dL</Text>
+            <Text style={styles.glucoseTime}>2 minutes ago</Text>
           </View>
         </View>
 
-      </View>
-    </TouchableWithoutFeedback>
+        {/* Lista de Notícias */}
+        {NEWS_DATA.map((item) => (
+          <View key={item.id} style={styles.newsCard}>
+            <Text style={styles.cardIcon}>{item.icon}</Text>
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardSubtitle}>{item.subtitle}</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#b3e6b3", // Fundo verde claro
-    alignItems: "center",
-    justifyContent: "center",
+  container: { flex: 1, backgroundColor: '#fff' },
+  header: { height: 100, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: '#eee', paddingTop: 40 },
+  miniLogo: { width: 100, height: 40 },
+  content: { padding: 20 },
+  glucoseContainer: { alignItems: 'center', marginVertical: 30 },
+  circularProgress: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 15,
+    borderColor: '#669944', // Verde do DIABot
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  card: {
-    backgroundColor: "#f8f9fa",
-    width: "85%",
-    padding: 30,
-    borderRadius: 40,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
+  glucoseValue: { fontSize: 48, fontWeight: 'bold', color: '#333' },
+  glucoseUnit: { fontSize: 16, color: '#666' },
+  glucoseTime: { fontSize: 12, color: '#999', marginTop: 5 },
+  newsCard: {
+    flexDirection: 'row',
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+    alignItems: 'center',
   },
- logo: {
-    width: 150, 
-    height: 150,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    marginBottom: 10, 
-    color: "#000",
-  },
-  forgotPasswordContainer: {
-    width: "100%",
-    alignItems: "flex-end", // Alinha o texto à direita
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#999",
-    fontSize: 12,
-  },
-  button: {
-    backgroundColor: "#669944", // Verde principal
-    width: "100%",
-    height: 55,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 25,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  signupContainer: {
-    alignItems: "center",
-  },
-  signupLabel: {
-    fontSize: 14,
-    color: "#444",
-    marginBottom: 10,
-  },
-  signupButton: {
-    backgroundColor: "#88bb77", // Verde um pouco mais claro para o cadastro
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-  },
-  signupButtonText: {
-    color: "white",
-    fontWeight: "600",
-  }
+  cardIcon: { fontSize: 30, marginRight: 15 },
+  cardTextContainer: { flex: 1 },
+  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#333' },
+  cardSubtitle: { fontSize: 14, color: '#666' },
 });

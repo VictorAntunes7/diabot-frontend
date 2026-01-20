@@ -1,33 +1,61 @@
+import { Ionicons } from '@expo/vector-icons'; // Biblioteca de ícones que já vem no Expo
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
+        tabBarActiveTintColor: '#669944', // Verde oficial do DIABot
+        tabBarInactiveTintColor: '#999',
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 10,
+        },
+        headerShown: false, // Esconde o título no topo para usarmos o nosso personalizado
       }}>
+      
+      {/* Aba de Notícias (A primeira que aparece) */}
       <Tabs.Screen
-        name="index"
+        name="index" // O arquivo index.tsx agora será nossa Home/Notícias
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="newspaper-outline" size={size} color={color} />
+          ),
         }}
       />
+
+      {/* Aba de Calendário */}
       <Tabs.Screen
-        name="explore"
+        name="explore" // Por enquanto mapeando para o arquivo que já existe
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Calendário',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* Aba de Registros */}
+      <Tabs.Screen
+        name="registros" // Criaremos este arquivo depois
+        options={{
+          title: 'Registros',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* Aba de Configurações */}
+      <Tabs.Screen
+        name="settings" // Criaremos este arquivo depois
+        options={{
+          title: 'Configurações',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
