@@ -55,8 +55,8 @@ export default function LoginScreen() {
             />
           </View>
           
-          <Text style={styles.welcomeText}>Bem-vindo ao DIABot!</Text>
-          <Text style={styles.subtitle}>Sua saúde com monitoramento inteligente.</Text>
+          <Text style={styles.welcomeText}>Bem-vindo(a) de volta!</Text>
+          <Text style={styles.subtitle}>Acesse sua conta para continuar.</Text>
           
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
