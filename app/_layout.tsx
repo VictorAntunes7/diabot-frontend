@@ -14,10 +14,18 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+      {/* Adicionamos screenOptions aqui para esconder o cabeçalho 
+        de TODAS as telas deste Stack (incluindo o Login/index) 
+      */}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" /> 
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
       </Stack>
+      
+      {/* A StatusBar 'auto' ajusta as cores dos ícones (hora/bateria) 
+        conforme o tema do sistema 
+      */}
       <StatusBar style="auto" />
     </ThemeProvider>
   );
