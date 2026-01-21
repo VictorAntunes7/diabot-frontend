@@ -1,5 +1,3 @@
-Aqui está uma proposta completa para o seu README.md, unindo uma introdução clara sobre o propósito do DIABot com a descrição técnica detalhada do frontend que você desenvolveu.
-
 DIABot - Monitoramento Integrado de Diabetes e Saúde Bucal
 O DIABot é uma solução mobile projetada para auxiliar pacientes diabéticos no gerenciamento diário de sua condição, com o diferencial estratégico de monitorar a saúde bucal — um fator frequentemente negligenciado, mas que possui correlação direta com o controle glicêmico.
 
