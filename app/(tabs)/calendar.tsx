@@ -1,6 +1,17 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  Image // Certifique-se de que Image está aqui
+  ,
+
+
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 const WEEK_DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 const DAYS_OF_MONTH = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -13,11 +24,9 @@ const INITIAL_TASKS = [
 ];
 
 export default function CalendarScreen() {
-  // 1. Voltamos com o estado das tarefas para permitir a alteração
   const [tasks, setTasks] = useState(INITIAL_TASKS);
-  const today = 21;
+  const today = 21; // Data de hoje: 21 de Janeiro
 
-  // 2. Função para alternar o estado de concluído
   const toggleTask = (id: string) => {
     setTasks(prevTasks => 
       prevTasks.map(task => 
@@ -28,6 +37,16 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Cabeçalho com a Logo do DIABot */}
+      <View style={styles.logoHeader}>
+        <Image 
+          // Se o erro for "Module not found", mude para logo.jpeg
+          source={require("../../assets/images/logo2.jpeg")} 
+          style={styles.logo} 
+          resizeMode="contain" 
+        />
+      </View>
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Janeiro 2026</Text>
         <TouchableOpacity>
@@ -35,7 +54,7 @@ export default function CalendarScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* GRADE DO CALENDÁRIO */}
+      {/* Grade do Calendário Mensal */}
       <View style={styles.calendarCard}>
         <View style={styles.weekDaysRow}>
           {WEEK_DAYS.map((day, index) => (
@@ -61,23 +80,22 @@ export default function CalendarScreen() {
         />
       </View>
 
-      {/* LISTA DE TAREFAS */}
+      {/* Seção de Tarefas Diárias */}
       <View style={styles.tasksSection}>
         <Text style={styles.tasksTitle}>Tarefas de Hoje</Text>
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.taskCard}>
               <View style={styles.taskInfo}>
                 <Text style={styles.taskTime}>{item.time}</Text>
-                {/* Estilo riscado se estiver completado */}
                 <Text style={[styles.taskTitle, item.completed && styles.taskTitleCompleted]}>
                   {item.title}
                 </Text>
               </View>
               
-              {/* 3. Transformado em TouchableOpacity com a função onPress */}
               <TouchableOpacity 
                 style={[styles.checkCircle, item.completed && styles.checkCircleActive]}
                 onPress={() => toggleTask(item.id)}
@@ -94,10 +112,23 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fdfdfd' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 25, paddingBottom: 10 },
+  container: { flex: 1, backgroundColor: '#f8f9fa' },
+  logoHeader: { 
+    alignItems: 'center', 
+    paddingVertical: 10,
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0'
+  },
+  logo: { width: 100, height: 40 },
+  header: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 25, 
+    paddingVertical: 15 
+  },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
-  
   calendarCard: {
     backgroundColor: '#fff',
     marginHorizontal: 20,
@@ -105,7 +136,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     elevation: 4,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowRadius: 10,
   },
   weekDaysRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 15 },
@@ -115,13 +146,12 @@ const styles = StyleSheet.create({
   dayNumber: { fontSize: 16, color: '#444' },
   dayNumberActive: { color: '#fff', fontWeight: 'bold' },
   dotIndicator: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#669944', marginTop: 2 },
-
-  tasksSection: { flex: 1, padding: 25 },
-  tasksTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
+  tasksSection: { flex: 1, paddingHorizontal: 25, marginTop: 20 },
+  tasksTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#333' },
   taskCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#fff',
     padding: 15,
     borderRadius: 20,
     marginBottom: 10,
@@ -131,7 +161,7 @@ const styles = StyleSheet.create({
   taskInfo: { flex: 1 },
   taskTime: { fontSize: 12, color: '#669944', fontWeight: 'bold' },
   taskTitle: { fontSize: 15, color: '#333' },
-  taskTitleCompleted: { textDecorationLine: 'line-through', color: '#bbb' }, // Texto riscado
+  taskTitleCompleted: { textDecorationLine: 'line-through', color: '#bbb' },
   checkCircle: {
     width: 28,
     height: 28,

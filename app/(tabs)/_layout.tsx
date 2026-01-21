@@ -1,59 +1,61 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native'; // Importe o Platform para ajustes específicos
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#669944', // Verde do DIABot
+        tabBarActiveTintColor: '#669944', // Verde principal
         tabBarInactiveTintColor: '#999',
         headerShown: false,
-        
-        // --- AJUSTE DE ESPAÇAMENTO AQUI ---
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 88 : 65, // Mais alto no iPhone
-          paddingBottom: Platform.OS === 'ios' ? 30 : 10, // Sobe os ícones e nomes
-          paddingTop: 10,
-          backgroundColor: '#fff',
+          backgroundColor: '#ffffff', // Força fundo branco
           borderTopWidth: 1,
           borderTopColor: '#f0f0f0',
+          height: Platform.OS === 'ios' ? 90 : 70,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+          paddingTop: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
-        },
+        }
       }}>
       
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Notícias',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="article" size={26} color={color} />
-          ),
-        }}
-      />
+      {/* 1. NOTÍCIAS (Esquerda) */}
+   <Tabs.Screen
+  name="home" // Mude de "index" para "home"
+  options={{
+    title: 'Notícias',
+    tabBarIcon: ({ color }) => <MaterialIcons name="article" size={26} color={color} />,
+  }}
+/>
 
+      {/* 2. CALENDÁRIO */}
       <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendário',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="event" size={26} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <MaterialIcons name="event" size={26} color={color} />,
         }}
       />
 
-      {/* Exemplo de como ficaria a aba de registros no futuro */}
+      {/* 3. REGISTROS (Fica entre Calendário e Configurações) */}
       <Tabs.Screen
         name="records"
         options={{
           title: 'Registros',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="add-circle" size={28} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <MaterialIcons name="person" size={26} color={color} />,
+        }}
+      />
+
+      {/* 4. CONFIGURAÇÕES (Extrema Direita) */}
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Configurações',
+          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={26} color={color} />,
         }}
       />
     </Tabs>
