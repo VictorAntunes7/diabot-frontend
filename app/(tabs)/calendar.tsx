@@ -1,112 +1,145 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+const WEEK_DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+const DAYS_OF_MONTH = Array.from({ length: 31 }, (_, i) => i + 1);
 
-export default function TabTwoScreen() {
+const INITIAL_TASKS = [
+  { id: '1', title: 'Medir glicemia (Jejum)', time: '07:30', completed: true, category: 'Diabetes' },
+  { id: '2', title: 'Passar fio dental', time: '07:45', completed: true, category: 'Saúde Bucal' },
+  { id: '3', title: 'Escovação matinal', time: '07:50', completed: false, category: 'Saúde Bucal' },
+  { id: '4', title: 'Medir glicemia (Pós-almoço)', time: '13:30', completed: false, category: 'Diabetes' },
+];
+
+export default function CalendarScreen() {
+  // 1. Voltamos com o estado das tarefas para permitir a alteração
+  const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const today = 21;
+
+  // 2. Função para alternar o estado de concluído
+  const toggleTask = (id: string) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Janeiro 2026</Text>
+        <TouchableOpacity>
+          <MaterialIcons name="chevron-right" size={30} color="#669944" />
+        </TouchableOpacity>
+      </View>
+
+      {/* GRADE DO CALENDÁRIO */}
+      <View style={styles.calendarCard}>
+        <View style={styles.weekDaysRow}>
+          {WEEK_DAYS.map((day, index) => (
+            <Text key={index} style={styles.weekDayText}>{day}</Text>
+          ))}
+        </View>
+
+        <FlatList
+          data={DAYS_OF_MONTH}
+          numColumns={7}
+          keyExtractor={(item) => item.toString()}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              style={[styles.dayCell, item === today && styles.dayCellActive]}
+            >
+              <Text style={[styles.dayNumber, item === today && styles.dayNumberActive]}>
+                {item}
+              </Text>
+              {item < today && <View style={styles.dotIndicator} />}
+            </TouchableOpacity>
+          )}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
+      </View>
+
+      {/* LISTA DE TAREFAS */}
+      <View style={styles.tasksSection}>
+        <Text style={styles.tasksTitle}>Tarefas de Hoje</Text>
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.taskCard}>
+              <View style={styles.taskInfo}>
+                <Text style={styles.taskTime}>{item.time}</Text>
+                {/* Estilo riscado se estiver completado */}
+                <Text style={[styles.taskTitle, item.completed && styles.taskTitleCompleted]}>
+                  {item.title}
+                </Text>
+              </View>
+              
+              {/* 3. Transformado em TouchableOpacity com a função onPress */}
+              <TouchableOpacity 
+                style={[styles.checkCircle, item.completed && styles.checkCircleActive]}
+                onPress={() => toggleTask(item.id)}
+                activeOpacity={0.7}
+              >
+                {item.completed && <MaterialIcons name="check" size={16} color="white" />}
+              </TouchableOpacity>
+            </View>
+          )}
         />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: { flex: 1, backgroundColor: '#fdfdfd' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 25, paddingBottom: 10 },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+  
+  calendarCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    padding: 15,
+    borderRadius: 30,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
-  titleContainer: {
+  weekDaysRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 15 },
+  weekDayText: { color: '#bbb', fontWeight: 'bold', width: 40, textAlign: 'center' },
+  dayCell: { width: `${100 / 7}%`, height: 40, justifyContent: 'center', alignItems: 'center' },
+  dayCellActive: { backgroundColor: '#669944', borderRadius: 12 },
+  dayNumber: { fontSize: 16, color: '#444' },
+  dayNumberActive: { color: '#fff', fontWeight: 'bold' },
+  dotIndicator: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#669944', marginTop: 2 },
+
+  tasksSection: { flex: 1, padding: 25 },
+  tasksTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
+  taskCard: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 20,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#eee'
   },
+  taskInfo: { flex: 1 },
+  taskTime: { fontSize: 12, color: '#669944', fontWeight: 'bold' },
+  taskTitle: { fontSize: 15, color: '#333' },
+  taskTitleCompleted: { textDecorationLine: 'line-through', color: '#bbb' }, // Texto riscado
+  checkCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#669944',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkCircleActive: { backgroundColor: '#669944' },
 });

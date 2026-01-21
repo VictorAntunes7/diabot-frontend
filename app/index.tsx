@@ -1,3 +1,5 @@
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Image,
   Keyboard,
@@ -10,6 +12,25 @@ import {
 } from "react-native";
 
 export default function Index() {
+  const router = useRouter(); 
+  
+  // Estados para capturar o que o usuário digita
+  const [cpf, setCpf] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // Função que valida os campos antes de entrar
+  const handleLogin = () => {
+    if (cpf.trim() === "" || password.trim() === "") {
+      setError("Por favor, preencha todos os campos.");
+      return;
+    }
+    
+    // Se estiver preenchido, limpa o erro e navega para as abas
+    setError("");
+    router.replace("/(tabs)");
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -21,37 +42,39 @@ export default function Index() {
             resizeMode="contain"
           />
           
-          <Text style={[styles.subtitle, { marginBottom: 2 }]}>
-            Bem-vindo(a) de volta!
-          </Text>
           <Text style={styles.subtitle}>
             Acesse sua conta para continuar.
           </Text>
 
+          {/* Exibição da mensagem de erro */}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
           <TextInput 
-            style={styles.input} 
+            style={[styles.input, error && !cpf ? styles.inputError : null]} 
             placeholder="Digite seu CPF" 
             placeholderTextColor="#888"
             keyboardType="numeric"
+            value={cpf}
+            onChangeText={setCpf}
           />
 
           <TextInput 
-            style={styles.input} 
+            style={[styles.input, error && !password ? styles.inputError : null]} 
             placeholder="Digite sua Senha" 
             placeholderTextColor="#888"
             secureTextEntry={true}
+            value={password}
+            onChangeText={setPassword}
           />
 
-          {/* Link para Esqueci minha senha */}
           <TouchableOpacity style={styles.forgotPasswordContainer}>
             <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
 
-          {/* Seção de Cadastro */}
           <View style={styles.signupContainer}>
             <Text style={styles.signupLabel}>É a sua primeira visita?</Text>
             <TouchableOpacity style={styles.signupButton}>
@@ -68,7 +91,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#b3e6b3", // Fundo verde claro
+    backgroundColor: "#b3e6b3",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -78,13 +101,13 @@ const styles = StyleSheet.create({
     padding: 30,
     borderRadius: 40,
     alignItems: "center",
+    elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 5,
   },
- logo: {
+  logo: {
     width: 150, 
     height: 150,
     marginBottom: 10,
@@ -95,6 +118,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
+  errorText: {
+    color: "#ff4444",
+    fontSize: 14,
+    marginBottom: 10,
+    fontWeight: "600",
+  },
   input: {
     width: "100%",
     height: 50,
@@ -104,9 +133,13 @@ const styles = StyleSheet.create({
     marginBottom: 10, 
     color: "#000",
   },
+  inputError: {
+    borderWidth: 1,
+    borderColor: "#ff4444",
+  },
   forgotPasswordContainer: {
     width: "100%",
-    alignItems: "flex-end", // Alinha o texto à direita
+    alignItems: "flex-end", 
     marginBottom: 20,
   },
   forgotPasswordText: {
@@ -114,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   button: {
-    backgroundColor: "#669944", // Verde principal
+    backgroundColor: "#669944", 
     width: "100%",
     height: 55,
     borderRadius: 30,
@@ -136,7 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   signupButton: {
-    backgroundColor: "#88bb77", // Verde um pouco mais claro para o cadastro
+    backgroundColor: "#88bb77", 
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 20,

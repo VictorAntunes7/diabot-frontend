@@ -1,60 +1,58 @@
-import { Ionicons } from '@expo/vector-icons'; // Biblioteca de ícones que já vem no Expo
+import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Platform } from 'react-native'; // Importe o Platform para ajustes específicos
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#669944', // Verde oficial do DIABot
+        tabBarActiveTintColor: '#669944', // Verde do DIABot
         tabBarInactiveTintColor: '#999',
+        headerShown: false,
+        
+        // --- AJUSTE DE ESPAÇAMENTO AQUI ---
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 10,
+          height: Platform.OS === 'ios' ? 88 : 65, // Mais alto no iPhone
+          paddingBottom: Platform.OS === 'ios' ? 30 : 10, // Sobe os ícones e nomes
+          paddingTop: 10,
+          backgroundColor: '#fff',
+          borderTopWidth: 1,
+          borderTopColor: '#f0f0f0',
         },
-        headerShown: false, // Esconde o título no topo para usarmos o nosso personalizado
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
       }}>
       
-      {/* Aba de Notícias (A primeira que aparece) */}
       <Tabs.Screen
-        name="index" // O arquivo index.tsx agora será nossa Home/Notícias
+        name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="newspaper-outline" size={size} color={color} />
+          title: 'Notícias',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="article" size={26} color={color} />
           ),
         }}
       />
 
-      {/* Aba de Calendário */}
       <Tabs.Screen
-        name="explore" // Por enquanto mapeando para o arquivo que já existe
+        name="calendar"
         options={{
           title: 'Calendário',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="event" size={26} color={color} />
           ),
         }}
       />
 
-      {/* Aba de Registros */}
+      {/* Exemplo de como ficaria a aba de registros no futuro */}
       <Tabs.Screen
-        name="registros" // Criaremos este arquivo depois
+        name="records"
         options={{
           title: 'Registros',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
-        }}
-      />
-
-      {/* Aba de Configurações */}
-      <Tabs.Screen
-        name="settings" // Criaremos este arquivo depois
-        options={{
-          title: 'Configurações',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="add-circle" size={28} color={color} />
           ),
         }}
       />
