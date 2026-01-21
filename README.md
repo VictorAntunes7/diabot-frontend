@@ -1,50 +1,42 @@
-# Welcome to your Expo app 👋
+Aqui está uma proposta completa para o seu README.md, unindo uma introdução clara sobre o propósito do DIABot com a descrição técnica detalhada do frontend que você desenvolveu.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+DIABot - Monitoramento Integrado de Diabetes e Saúde Bucal
+O DIABot é uma solução mobile projetada para auxiliar pacientes diabéticos no gerenciamento diário de sua condição, com o diferencial estratégico de monitorar a saúde bucal — um fator frequentemente negligenciado, mas que possui correlação direta com o controle glicêmico.
 
-## Get started
+O aplicativo centraliza o registro de níveis de glicose, medicação, atividades físicas e hábitos de higiene oral, quebrando o ciclo vicioso onde infecções bucais dificultam o controle da glicemia e vice-versa.
 
-1. Install dependencies
+💻 Especificações Técnicas do Frontend
+Como um projeto desenvolvido dentro do curso de Sistemas de Informação na UFF, o frontend do DIABot foi construído com foco em padrões de engenharia modernos, escalabilidade e uma experiência de usuário (UX) intuitiva.
 
-   ```bash
-   npm install
-   ```
+🏗️ Arquitetura e Navegação
+Expo Router (File-based Routing): Implementação de roteamento baseado no sistema de arquivos, garantindo uma estrutura de navegação limpa e declarativa. O app utiliza uma interface de abas (Tabs) para acesso rápido às funcionalidades principais e uma pilha de navegação (Stack) para fluxos de formulários e históricos.
 
-2. Start the app
+Estrutura Modular: Organização de diretórios que separa logicamente as rotas (app/), componentes reutilizáveis (components/) e definições globais (constants/), facilitando a manutenção e futuras expansões do código.
 
-   ```bash
-   npx expo start
-   ```
+🎨 Design System e Estilização
+Design Tokens (Single Source of Truth): Centralização da identidade visual através de arquivos de constantes (Colors.ts, Layout.ts, Typography.ts). Essa abordagem permite que o app mantenha consistência estética absoluta e suporte mudanças globais de interface com esforço mínimo.
 
-In the output, you'll find options to open the app in a
+Componentização Avançada: Desenvolvimento de componentes modulares como AnimatedButton, ActionButton e RecordCard. O uso de propriedades (props) permite que o mesmo componente assuma diferentes estados visuais, reduzindo a duplicidade de código.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Responsividade Adaptativa: Utilização de SafeAreaView e ScrollView para garantir que a interface se adapte perfeitamente a diferentes tamanhos de dispositivos e orientações de tela.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+⌨️ Desenvolvimento com TypeScript
+Tipagem Estática: O projeto foi desenvolvido 100% em TypeScript, garantindo segurança no fluxo de dados e reduzindo erros em tempo de execução.
 
-## Get a fresh project
+Interfaces de Contrato: Definição de tipos rigorosos para os registros de saúde, preparando o frontend para uma integração transparente com APIs REST ou bancos de dados locais (como SQLite ou AsyncStorage).
 
-When you're ready, run:
+🔄 UX e Interatividade
+Feedback Visual Animado: Uso da Animated API do React Native para criar transições suaves e o SuccessModal — um componente personalizado que fornece confirmação visual instantânea após cada registro de saúde.
 
-```bash
-npm run reset-project
-```
+Otimização de Entrada de Dados: Configuração de teclados inteligentes (numéricos para glicose, multiline para observações) e fluxos de navegação que reduzem a carga cognitiva e o tempo de preenchimento do usuário.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+🛠️ Stack Tecnológica
+Framework: React Native (SDK 50+)
 
-## Learn more
+Gerenciamento de Rotas: Expo Router
 
-To learn more about developing your project with Expo, look at the following resources:
+Linguagem: TypeScript
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Estilização: StyleSheet API (CSS-in-JS)
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Ícones: Expo Vector Icons (Material Community & Ionicons)
