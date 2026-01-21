@@ -2,16 +2,18 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   FlatList,
-  Image // Certifique-se de que Image está aqui
-  ,
-
-
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
+
+// Importação das suas constantes
+import { Colors } from '../../constants/Colors';
+import { Layout } from '../../constants/Layout';
+import { Typography } from '../../constants/Typography';
 
 const WEEK_DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 const DAYS_OF_MONTH = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -25,7 +27,7 @@ const INITIAL_TASKS = [
 
 export default function CalendarScreen() {
   const [tasks, setTasks] = useState(INITIAL_TASKS);
-  const today = 21; // Data de hoje: 21 de Janeiro
+  const today = 21; // Janeiro 2026
 
   const toggleTask = (id: string) => {
     setTasks(prevTasks => 
@@ -37,10 +39,9 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Cabeçalho com a Logo do DIABot */}
       <View style={styles.logoHeader}>
         <Image 
-          // Se o erro for "Module not found", mude para logo.jpeg
+          // Ajustado para logo.jpeg conforme o explorer
           source={require("../../assets/images/logo2.jpeg")} 
           style={styles.logo} 
           resizeMode="contain" 
@@ -50,11 +51,10 @@ export default function CalendarScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Janeiro 2026</Text>
         <TouchableOpacity>
-          <MaterialIcons name="chevron-right" size={30} color="#669944" />
+          <MaterialIcons name="chevron-right" size={30} color={Colors.primary} />
         </TouchableOpacity>
       </View>
 
-      {/* Grade do Calendário Mensal */}
       <View style={styles.calendarCard}>
         <View style={styles.weekDaysRow}>
           {WEEK_DAYS.map((day, index) => (
@@ -80,7 +80,6 @@ export default function CalendarScreen() {
         />
       </View>
 
-      {/* Seção de Tarefas Diárias */}
       <View style={styles.tasksSection}>
         <Text style={styles.tasksTitle}>Tarefas de Hoje</Text>
         <FlatList
@@ -91,7 +90,10 @@ export default function CalendarScreen() {
             <View style={styles.taskCard}>
               <View style={styles.taskInfo}>
                 <Text style={styles.taskTime}>{item.time}</Text>
-                <Text style={[styles.taskTitle, item.completed && styles.taskTitleCompleted]}>
+                <Text style={[
+                  styles.taskTitle, 
+                  item.completed && styles.taskTitleCompleted
+                ]}>
                   {item.title}
                 </Text>
               </View>
@@ -101,7 +103,7 @@ export default function CalendarScreen() {
                 onPress={() => toggleTask(item.id)}
                 activeOpacity={0.7}
               >
-                {item.completed && <MaterialIcons name="check" size={16} color="white" />}
+                {item.completed && <MaterialIcons name="check" size={16} color={Colors.white} />}
               </TouchableOpacity>
             </View>
           )}
@@ -112,13 +114,13 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8f9fa' },
+  container: { flex: 1, backgroundColor: Colors.card },
   logoHeader: { 
     alignItems: 'center', 
     paddingVertical: 10,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.card,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    borderBottomColor: Colors.border
   },
   logo: { width: 100, height: 40 },
   header: { 
@@ -128,48 +130,57 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25, 
     paddingVertical: 15 
   },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+  headerTitle: { 
+    fontSize: Typography.size.title, 
+    fontWeight: Typography.weight.bold, 
+    color: Colors.text 
+  },
   calendarCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     marginHorizontal: 20,
     padding: 15,
-    borderRadius: 30,
+    borderRadius: Layout.radius.card,
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 10,
   },
   weekDaysRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 15 },
-  weekDayText: { color: '#bbb', fontWeight: 'bold', width: 40, textAlign: 'center' },
+  weekDayText: { color: Colors.placeholder, fontWeight: Typography.weight.bold, width: 40, textAlign: 'center' },
   dayCell: { width: `${100 / 7}%`, height: 40, justifyContent: 'center', alignItems: 'center' },
-  dayCellActive: { backgroundColor: '#669944', borderRadius: 12 },
-  dayNumber: { fontSize: 16, color: '#444' },
-  dayNumberActive: { color: '#fff', fontWeight: 'bold' },
-  dotIndicator: { width: 4, height: 4, borderRadius: 2, backgroundColor: '#669944', marginTop: 2 },
+  dayCellActive: { backgroundColor: Colors.primary, borderRadius: 12 },
+  dayNumber: { fontSize: Typography.size.body, color: Colors.text },
+  dayNumberActive: { color: Colors.white, fontWeight: Typography.weight.bold },
+  dotIndicator: { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.primary, marginTop: 2 },
   tasksSection: { flex: 1, paddingHorizontal: 25, marginTop: 20 },
-  tasksTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#333' },
+  tasksTitle: { 
+    fontSize: Typography.size.subtitle, 
+    fontWeight: Typography.weight.bold, 
+    marginBottom: 15, 
+    color: Colors.text 
+  },
   taskCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     padding: 15,
-    borderRadius: 20,
+    borderRadius: Layout.radius.input,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#eee'
+    borderColor: Colors.border
   },
   taskInfo: { flex: 1 },
-  taskTime: { fontSize: 12, color: '#669944', fontWeight: 'bold' },
-  taskTitle: { fontSize: 15, color: '#333' },
-  taskTitleCompleted: { textDecorationLine: 'line-through', color: '#bbb' },
+  taskTime: { fontSize: Typography.size.caption, color: Colors.primary, fontWeight: Typography.weight.bold },
+  taskTitle: { fontSize: Typography.size.body, color: Colors.text },
+  taskTitleCompleted: { textDecorationLine: 'line-through', color: Colors.placeholder },
   checkCircle: {
     width: 28,
     height: 28,
     borderRadius: 14,
     borderWidth: 2,
-    borderColor: '#669944',
+    borderColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkCircleActive: { backgroundColor: '#669944' },
+  checkCircleActive: { backgroundColor: Colors.primary },
 });

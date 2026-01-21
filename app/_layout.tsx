@@ -1,32 +1,52 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+// Importação das suas constantes de cores
+import { Colors } from '../constants/Colors';
 
 export const unstable_settings = {
+  // Garante que o botão de voltar não quebre o fluxo das abas
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  // Criamos um tema customizado baseado no DefaultTheme para o DIABot
+  const DiabotTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: Colors.background, // Usa o verde #b3e6b3 definido
+    },
+  };
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* Adicionamos screenOptions aqui para esconder o cabeçalho 
-        de TODAS as telas deste Stack (incluindo o Login/index) 
-      */}
+    <ThemeProvider value={DiabotTheme}>
+      {/* Escondemos o cabeçalho global para usar nossos headers customizados */}
       <Stack screenOptions={{ headerShown: false }}>
+        {/* Tela inicial (Login) */}
         <Stack.Screen name="index" /> 
+        
+        {/* Tela de Cadastro (Adicionada conforme seu Explorer) */}
+        <Stack.Screen name="signup" /> 
+        
+        {/* Grupo de Abas principais */}
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
+        
+        {/* Modais de sistema ou alertas */}
+        <Stack.Screen 
+          name="modal" 
+          options={{ 
+            presentation: 'modal', 
+            headerShown: true, 
+            title: 'Informação' 
+          }} 
+        />
       </Stack>
       
-      {/* A StatusBar 'auto' ajusta as cores dos ícones (hora/bateria) 
-        conforme o tema do sistema 
-      */}
-      <StatusBar style="auto" />
+      {/* StatusBar fixa em 'dark' para os ícones ficarem pretos sobre o fundo verde claro */}
+      <StatusBar style="dark" />
     </ThemeProvider>
   );
 }

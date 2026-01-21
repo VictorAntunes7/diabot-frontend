@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
 import {
   FlatList,
   Image,
@@ -9,6 +10,12 @@ import {
   View
 } from 'react-native';
 
+// Importação do seu Design System e Mocks
+import { Colors } from '../../constants/Colors';
+import { Layout } from '../../constants/Layout';
+import { MockUser } from '../../constants/MockData';
+import { Typography } from '../../constants/Typography';
+
 // Dados das notícias para o monitoramento integrado
 const NEWS_DATA = [
   { id: '1', title: 'Saúde Bucal e Diabetes', subtitle: 'A relação que você precisa conhecer.', icon: 'health-and-safety' },
@@ -16,13 +23,13 @@ const NEWS_DATA = [
   { id: '3', title: 'Exercícios em Casa', subtitle: 'Mantenha-se ativo com 15 minutos diários.', icon: 'fitness-center' },
 ];
 
-export default function NewsScreen() {
+export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Cabeçalho com Logo Centralizada */}
       <View style={styles.header}>
         <Image 
-          // Caminho com ../../ pois está dentro da pasta (tabs)
+          // Ajustado para logo.jpeg conforme seu explorer
           source={require("../../assets/images/logo2.jpeg")} 
           style={styles.logoHeader} 
           resizeMode="contain" 
@@ -30,7 +37,7 @@ export default function NewsScreen() {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.welcomeText}>Olá, Victor! 👋</Text>
+        <Text style={styles.welcomeText}>Olá, {MockUser.name}! 👋</Text>
         <Text style={styles.dateText}>Quarta-feira, 21 de Janeiro</Text>
 
         {/* Indicador de Glicemia em Arco */}
@@ -56,13 +63,13 @@ export default function NewsScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.newsCard} activeOpacity={0.7}>
               <View style={styles.iconCircle}>
-                <MaterialIcons name={item.icon} size={24} color="#669944" />
+                <MaterialIcons name={item.icon as any} size={24} color={Colors.primary} />
               </View>
               <View style={styles.newsText}>
                 <Text style={styles.newsTitle}>{item.title}</Text>
                 <Text style={styles.newsSubtitle}>{item.subtitle}</Text>
               </View>
-              <MaterialIcons name="chevron-right" size={24} color="#ccc" />
+              <MaterialIcons name="chevron-right" size={24} color={Colors.placeholder} />
             </TouchableOpacity>
           )}
         />
@@ -72,23 +79,27 @@ export default function NewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.white },
   header: { 
     height: 80, 
     alignItems: 'center', 
     justifyContent: 'center', 
     borderBottomWidth: 1, 
-    borderBottomColor: '#f0f0f0',
-    backgroundColor: '#f8f9fa',
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.card,
   },
   logoHeader: { width: 120, height: 50 },
-  content: { flex: 1, padding: 20 },
-  welcomeText: { fontSize: 22, fontWeight: 'bold', color: '#333' },
-  dateText: { fontSize: 14, color: '#999', marginBottom: 20 },
+  content: { flex: 1, padding: Layout.spacing.l },
+  welcomeText: { 
+    fontSize: Typography.size.title, 
+    fontWeight: Typography.weight.bold, 
+    color: Colors.text 
+  },
+  dateText: { fontSize: 14, color: Colors.textLight, marginBottom: 20 },
   
-  // Cartão do Medidor
+  // Cartão do Medidor (O Arco)
   glucoseCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: 30,
     padding: 20,
     alignItems: 'center',
@@ -104,13 +115,13 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 70,
     borderWidth: 10,
-    borderTopColor: '#669944',
-    borderLeftColor: '#669944',
-    borderRightColor: '#669944',
-    borderBottomColor: '#f0f0f0', // Cria a abertura embaixo
+    borderTopColor: Colors.primary,
+    borderLeftColor: Colors.primary,
+    borderRightColor: Colors.primary,
+    borderBottomColor: Colors.border, // Cria a abertura embaixo
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     marginBottom: 10,
     transform: [{ rotate: '-45deg' }], // Gira para alinhar a abertura
   },
@@ -119,33 +130,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     transform: [{ rotate: '45deg' }], // Desfaz a rotação para o texto ficar reto
   },
-  glucoseValue: { fontSize: 36, fontWeight: 'bold', color: '#333' },
-  glucoseUnit: { fontSize: 14, color: '#666' },
-  glucoseStatus: { fontSize: 16, fontWeight: '600', color: '#4a7a2a' },
-  glucoseTime: { fontSize: 12, color: '#999' },
+  glucoseValue: { fontSize: 36, fontWeight: Typography.weight.bold, color: Colors.text },
+  glucoseUnit: { fontSize: 14, color: Colors.textLight },
+  glucoseStatus: { fontSize: 16, fontWeight: Typography.weight.semiBold, color: Colors.primary },
+  glucoseTime: { fontSize: 12, color: Colors.placeholder },
 
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#333' },
+  sectionTitle: { 
+    fontSize: Typography.size.subtitle, 
+    fontWeight: Typography.weight.bold, 
+    marginBottom: 15, 
+    color: Colors.text 
+  },
   
   newsCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#fff',
+    padding: Layout.spacing.m,
+    backgroundColor: Colors.white,
     borderRadius: 20,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#f0f0f0',
+    borderColor: Colors.border,
   },
   iconCircle: {
     width: 45,
     height: 45,
     borderRadius: 22.5,
-    backgroundColor: '#eef5ea',
+    backgroundColor: '#eef5ea', // Tom suave de Colors.primary
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 15,
   },
   newsText: { flex: 1 },
-  newsTitle: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  newsSubtitle: { fontSize: 13, color: '#777' },
+  newsTitle: { fontSize: 16, fontWeight: Typography.weight.bold, color: Colors.text },
+  newsSubtitle: { fontSize: 13, color: Colors.textLight },
 });

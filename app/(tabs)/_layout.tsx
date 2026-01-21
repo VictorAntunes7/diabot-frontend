@@ -1,61 +1,68 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
+// Importação das suas constantes
+import { Colors } from '../../constants/Colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#669944', // Verde principal
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textLight,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#ffffff', // Força fundo branco
+          backgroundColor: Colors.white,
           borderTopWidth: 1,
-          borderTopColor: '#f0f0f0',
-          height: Platform.OS === 'ios' ? 90 : 70,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
-          paddingTop: 10,
+          borderTopColor: Colors.border,
+          // Ajuste fino de altura para comportar ícone + texto
+          height: Platform.OS === 'ios' ? 88 : 68,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          paddingTop: 8,
+          // Sombra para destacar a barra do fundo
+          elevation: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.1,
+          shadowRadius: 5,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
-        }
+          // Fonte levemente menor (11) para evitar que nomes longos quebrem a margem
+          fontSize: 11, 
+          fontWeight: '600',
+          marginTop: -4, // Aproxima o texto do ícone para ganhar espaço
+        },
       }}>
       
-      {/* 1. NOTÍCIAS (Esquerda) */}
-   <Tabs.Screen
-  name="home" // Mude de "index" para "home"
-  options={{
-    title: 'Notícias',
-    tabBarIcon: ({ color }) => <MaterialIcons name="article" size={26} color={color} />,
-  }}
-/>
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Início', // "Início" é mais curto e evita aperto no rodapé
+          tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
+        }}
+      />
 
-      {/* 2. CALENDÁRIO */}
       <Tabs.Screen
         name="calendar"
         options={{
           title: 'Calendário',
-          tabBarIcon: ({ color }) => <MaterialIcons name="event" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="event" size={24} color={color} />,
         }}
       />
 
-      {/* 3. REGISTROS (Fica entre Calendário e Configurações) */}
       <Tabs.Screen
         name="records"
         options={{
           title: 'Registros',
-          tabBarIcon: ({ color }) => <MaterialIcons name="person" size={26} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="list-alt" size={24} color={color} />,
         }}
       />
 
-      {/* 4. CONFIGURAÇÕES (Extrema Direita) */}
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Configurações',
-          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={26} color={color} />,
+          title: 'Ajustes', // "Ajustes" cabe melhor na margem do que "Configurações"
+          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
         }}
       />
     </Tabs>
