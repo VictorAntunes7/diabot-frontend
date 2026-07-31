@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   SafeAreaView,
@@ -12,18 +13,37 @@ import {
   View
 } from "react-native";
 
-// Importação do Design System e Componentes
 import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
 import { Typography } from '../constants/Typography';
+import { obterUsuario } from '../services/storage';
 
 export default function LoginScreen() {
-  const router = useRouter(); 
+  const router = useRouter();
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [verificando, setVerificando] = useState(true);
+
+  useEffect(() => {
+    obterUsuario().then(usuario => {
+      if (usuario) {
+        router.replace('/(tabs)/home');
+      } else {
+        setVerificando(false);
+      }
+    });
+  }, []);
+
+  if (verificando) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center' }]}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </SafeAreaView>
+    );
+  }
 
   const formatCPF = (value: string) => {
     return value

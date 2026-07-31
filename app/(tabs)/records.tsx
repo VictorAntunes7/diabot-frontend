@@ -1,15 +1,108 @@
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from "expo-router";
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from 'react';
+import { Alert, Image, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Importação do Design System e Constantes
 import { Colors } from '../../constants/Colors';
 import { Layout } from '../../constants/Layout';
 import { Typography } from '../../constants/Typography';
+import {
+  listarAtividades,
+  listarGlicemia,
+  listarMedicacoes,
+  listarSaudeBucal,
+  removerAtividade,
+  removerGlicemia,
+  removerMedicacao,
+  removerSaudeBucal,
+} from '../../services/storage';
+
+type RegistroHoje = {
+  id: string;
+  time: string;
+  icon: string;
+  color: string;
+  title: string;
+  subtitle: string;
+  isCommunity: boolean;
+  categoria: 'glicemia' | 'bucal' | 'atividade' | 'medicacao';
+};
 
 export default function RecordsScreen() {
   const router = useRouter();
+  const [registrosHoje, setRegistrosHoje] = useState<RegistroHoje[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function carregar() {
+        const agora = new Date();
+        const ehHoje = (iso: string) => {
+          const d = new Date(iso);
+          return d.getDate() === agora.getDate() &&
+            d.getMonth() === agora.getMonth() &&
+            d.getFullYear() === agora.getFullYear();
+        };
+        const hora = (iso: string) =>
+          new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        const [glicemias, bucais, atividades, medicacoes] = await Promise.all([
+          listarGlicemia(),
+          listarSaudeBucal(),
+          listarAtividades(),
+          listarMedicacoes(),
+        ]);
+
+        const itens: RegistroHoje[] = [
+          ...glicemias.filter(r => ehHoje(r.data)).map(r => ({
+            id: r.id, time: hora(r.data), icon: 'water', color: Colors.error,
+            title: 'Glicemia', subtitle: `${r.valor} mg/dL (${r.periodo})`,
+            isCommunity: false, categoria: 'glicemia' as const,
+          })),
+          ...bucais.filter(r => ehHoje(r.data)).map(r => {
+            const atos = [r.escovacao && 'Escovação', r.fioDental && 'Fio dental', r.enxaguante && 'Enxaguante'].filter(Boolean).join(' + ');
+            return {
+              id: r.id, time: hora(r.data), icon: 'tooth', color: Colors.success,
+              title: 'Saúde Bucal', subtitle: atos || r.observacoes || 'Registro bucal',
+              isCommunity: true, categoria: 'bucal' as const,
+            };
+          }),
+          ...atividades.filter(r => ehHoje(r.data)).map(r => ({
+            id: r.id, time: hora(r.data), icon: 'run', color: Colors.primary,
+            title: 'Atividade', subtitle: `${r.duracaoMinutos} min ${r.tipo}`,
+            isCommunity: true, categoria: 'atividade' as const,
+          })),
+          ...medicacoes.filter(r => ehHoje(r.data)).map(r => ({
+            id: r.id, time: hora(r.data), icon: 'pill', color: Colors.warning,
+            title: 'Medicação', subtitle: `${r.nome} ${r.dosagem}`,
+            isCommunity: true, categoria: 'medicacao' as const,
+          })),
+        ];
+
+        itens.sort((a, b) => a.time.localeCompare(b.time));
+        setRegistrosHoje(itens);
+      }
+      carregar();
+    }, [])
+  );
+
+  async function excluir(item: RegistroHoje) {
+    const executar = async () => {
+      if (item.categoria === 'glicemia') await removerGlicemia(item.id);
+      else if (item.categoria === 'bucal') await removerSaudeBucal(item.id);
+      else if (item.categoria === 'atividade') await removerAtividade(item.id);
+      else if (item.categoria === 'medicacao') await removerMedicacao(item.id);
+      setRegistrosHoje(prev => prev.filter(r => r.id !== item.id));
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm(`Deseja excluir "${item.title}"?`)) await executar();
+      return;
+    }
+    Alert.alert('Excluir registro', `Deseja excluir "${item.title}"?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Excluir', style: 'destructive', onPress: executar },
+    ]);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,9 +192,24 @@ export default function RecordsScreen() {
         {/* --- LISTA DE REGISTROS DE HOJE --- */}
         <Text style={styles.sectionTitle}>Registros de Hoje</Text>
         <View style={styles.listContainer}>
-          <RecordCard time="07:00" icon="water" color={Colors.error} title="Glicemia" subtitle="110 mg/dL (Jejum)" />
-          <RecordCard time="08:30" icon="tooth" color={Colors.success} title="Saúde Bucal" subtitle="Escovação + Fio dental" isCommunity />
-          <RecordCard time="09:00" icon="pill" color={Colors.warning} title="Medicação" subtitle="Metformina 500mg" isCommunity />
+          {registrosHoje.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>Nenhum registro feito hoje ainda.</Text>
+            </View>
+          ) : (
+            registrosHoje.map(item => (
+              <RecordCard
+                key={item.id}
+                time={item.time}
+                icon={item.icon}
+                color={item.color}
+                title={item.title}
+                subtitle={item.subtitle}
+                isCommunity={item.isCommunity}
+                onDelete={() => excluir(item)}
+              />
+            ))
+          )}
         </View>
 
       </ScrollView>
@@ -131,14 +239,14 @@ const ActionButton = ({ icon, label, color, isCommunity, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const RecordCard = ({ time, icon, color, title, subtitle, isCommunity }: any) => (
+const RecordCard = ({ time, icon, color, title, subtitle, isCommunity, onDelete }: any) => (
   <TouchableOpacity style={styles.recordCard} activeOpacity={0.7}>
     <View style={styles.timeContainer}>
       <Text style={styles.recordTime}>{time}</Text>
     </View>
     <View style={[styles.recordIconCircle, { backgroundColor: `${color}15` }]}>
-      {isCommunity ? 
-        <MaterialCommunityIcons name={icon} size={20} color={color} /> : 
+      {isCommunity ?
+        <MaterialCommunityIcons name={icon} size={20} color={color} /> :
         <Ionicons name={icon} size={20} color={color} />
       }
     </View>
@@ -146,7 +254,9 @@ const RecordCard = ({ time, icon, color, title, subtitle, isCommunity }: any) =>
       <Text style={styles.recordTitle}>{title}</Text>
       <Text style={styles.recordSubtitle}>{subtitle}</Text>
     </View>
-    <MaterialIcons name="edit" size={20} color={Colors.placeholder} />
+    <TouchableOpacity onPress={onDelete} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+      <MaterialIcons name="delete-outline" size={20} color={Colors.placeholder} />
+    </TouchableOpacity>
   </TouchableOpacity>
 );
 
@@ -230,7 +340,9 @@ const styles = StyleSheet.create({
   gridIconCircle: { width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   gridLabel: { fontWeight: Typography.weight.bold, color: Colors.text },
   
-  listContainer: { },
+  listContainer: {},
+  emptyState: { alignItems: 'center', paddingVertical: 20 },
+  emptyText: { color: Colors.placeholder, fontSize: 14 },
   recordCard: {
     flexDirection: 'row',
     alignItems: 'center',

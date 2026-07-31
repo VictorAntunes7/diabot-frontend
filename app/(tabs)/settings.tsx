@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
@@ -12,17 +12,22 @@ import {
   View
 } from 'react-native';
 
-// Importação do seu Design System e Mocks
 import { Colors } from '../../constants/Colors';
 import { Layout } from '../../constants/Layout';
-import { MockUser } from '../../constants/MockData';
 import { Typography } from '../../constants/Typography';
+import { Usuario, obterUsuario, removerUsuario } from '../../services/storage';
 
 export default function SettingsScreen() {
   const router = useRouter(); 
   const [notifications, setNotifications] = useState(true);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
 
-  const handleLogout = () => {
+  useEffect(() => {
+    obterUsuario().then(setUsuario);
+  }, []);
+
+  const handleLogout = async () => {
+    await removerUsuario();
     router.replace("/"); 
   };
 
@@ -48,11 +53,11 @@ export default function SettingsScreen() {
         <View style={styles.sectionCard}>
           <View style={styles.profileRow}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{MockUser.name.charAt(0)}</Text>
+            <Text style={styles.avatarText}>{(usuario?.nome ?? 'U').charAt(0).toUpperCase()}</Text>
             </View>
             <View>
-              <Text style={styles.profileName}>{MockUser.name}</Text>
-              <Text style={styles.profileEmail}>victor@uff.br</Text>
+              <Text style={styles.profileName}>{usuario?.nome ?? 'Usuário'}</Text>
+              <Text style={styles.profileEmail}>{usuario?.email ?? ''}</Text>
             </View>
           </View>
         </View>

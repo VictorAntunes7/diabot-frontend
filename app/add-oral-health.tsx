@@ -14,11 +14,11 @@ import {
     View
 } from "react-native";
 
-// Importação do Design System
 import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
 import { Typography } from '../constants/Typography';
+import { salvarSaudeBucal } from '../services/storage';
 
 export default function AddOralHealthScreen() {
   const router = useRouter();
@@ -36,19 +36,23 @@ export default function AddOralHealthScreen() {
     setActivities(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!activities.brushing && !activities.flossing && !activities.mouthwash && !notes) {
       Alert.alert("Aviso", "Por favor, selecione pelo menos uma atividade ou adicione uma nota.");
       return;
     }
-
     setLoading(true);
-    // Simulação de salvamento no sistema
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert("Sucesso", "Registo de saúde bucal guardado!");
-      router.back();
-    }, 1000);
+    await salvarSaudeBucal({
+      id: Date.now().toString(),
+      data: new Date().toISOString(),
+      escovacao: activities.brushing,
+      fioDental: activities.flossing,
+      enxaguante: activities.mouthwash,
+      observacoes: notes || undefined,
+    });
+    setLoading(false);
+    Alert.alert("Sucesso", "Registo de saúde bucal guardado!");
+    router.back();
   };
 
   return (

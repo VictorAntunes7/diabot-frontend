@@ -14,10 +14,10 @@ import {
     View
 } from "react-native";
 
-// Importação do Design System
 import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
+import { salvarAtividade } from '../services/storage';
 
 export default function AddActivityScreen() {
   const router = useRouter();
@@ -25,19 +25,21 @@ export default function AddActivityScreen() {
   const [type, setType] = useState("Caminhada");
   const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!duration || isNaN(Number(duration))) {
       Alert.alert("Erro", "Por favor, insira uma duração válida em minutos.");
       return;
     }
-
     setLoading(true);
-    // Simulação de salvamento
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert("Sucesso", "Atividade registada com sucesso!");
-      router.back();
-    }, 1000);
+    await salvarAtividade({
+      id: Date.now().toString(),
+      data: new Date().toISOString(),
+      tipo: type,
+      duracaoMinutos: Number(duration),
+    });
+    setLoading(false);
+    Alert.alert("Sucesso", "Atividade registada com sucesso!");
+    router.back();
   };
 
   return (

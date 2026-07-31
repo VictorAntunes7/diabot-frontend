@@ -1,43 +1,149 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from "expo-router";
-import React from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  FlatList,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 
-// Importação do Design System do DIABot
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
 import { Typography } from '../constants/Typography';
+import {
+  listarAtividades,
+  listarGlicemia,
+  listarMedicacoes,
+  listarSaudeBucal,
+  removerAtividade,
+  removerGlicemia,
+  removerMedicacao,
+  removerSaudeBucal,
+} from '../services/storage';
 
-// Mock de dados históricos para visualização
-const HISTORY_DATA = [
-  { id: '1', date: 'Hoje', time: '09:00', type: 'pill', title: 'Medicação', subtitle: 'Metformina 500mg', color: Colors.warning },
-  { id: '2', date: 'Hoje', time: '08:30', type: 'tooth', title: 'Saúde Bucal', subtitle: 'Escovação completa', color: Colors.success },
-  { id: '3', date: 'Hoje', time: '07:00', type: 'water', title: 'Glicemia', subtitle: '110 mg/dL', color: Colors.error },
-  { id: '4', date: 'Ontem', time: '22:00', type: 'water', title: 'Glicemia', subtitle: '145 mg/dL', color: Colors.error },
-  { id: '5', date: 'Ontem', time: '20:00', type: 'run', title: 'Atividade', subtitle: '30 min Caminhada', color: Colors.primary },
-  { id: '6', date: '20 Jan', time: '12:30', type: 'water', title: 'Glicemia', subtitle: '128 mg/dL', color: Colors.error },
-  { id: '7', date: '20 Jan', time: '08:00', type: 'tooth', title: 'Saúde Bucal', subtitle: 'Fio dental', color: Colors.success },
-];
+type ItemHistorico = {
+  id: string;
+  date: string;
+  time: string;
+  type: string;
+  title: string;
+  subtitle: string;
+  color: string;
+  categoria: 'glicemia' | 'bucal' | 'atividade' | 'medicacao';
+};
+
+function formatarData(iso: string) {
+  const d = new Date(iso);
+  const hoje = new Date();
+  const ontem = new Date();
+  ontem.setDate(hoje.getDate() - 1);
+  if (d.toDateString() === hoje.toDateString()) return 'Hoje';
+  if (d.toDateString() === ontem.toDateString()) return 'Ontem';
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+function formatarHora(iso: string) {
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
 
 export default function HistoryScreen() {
   const router = useRouter();
+  const [registros, setRegistros] = useState<ItemHistorico[]>([]);
 
-  const renderItem = ({ item }: any) => (
-    <View style={styles.recordItem}>
+  async function carregar() {
+    const [glicemias, bucais, atividades, medicacoes] = await Promise.all([
+      listarGlicemia(),
+      listarSaudeBucal(),
+      listarAtividades(),
+      listarMedicacoes(),
+    ]);
+
+    const itens: ItemHistorico[] = [
+      ...glicemias.map(r => ({
+        id: r.id, date: formatarData(r.data), time: formatarHora(r.data),
+        type: 'water', title: 'Glicemia',
+        subtitle: `${r.valor} mg/dL (${r.periodo})`, color: Colors.error,
+        categoria: 'glicemia' as const,
+      })),
+      ...bucais.map(r => {
+        const atos = [r.escovacao && 'Escovação', r.fioDental && 'Fio dental', r.enxaguante && 'Enxaguante'].filter(Boolean).join(', ');
+        return {
+          id: r.id, date: formatarData(r.data), time: formatarHora(r.data),
+          type: 'tooth', title: 'Saúde Bucal',
+          subtitle: atos || r.observacoes || 'Registro bucal', color: Colors.success,
+          categoria: 'bucal' as const,
+        };
+      }),
+      ...atividades.map(r => ({
+        id: r.id, date: formatarData(r.data), time: formatarHora(r.data),
+        type: 'run', title: 'Atividade',
+        subtitle: `${r.duracaoMinutos} min ${r.tipo}`, color: Colors.primary,
+        categoria: 'atividade' as const,
+      })),
+      ...medicacoes.map(r => ({
+        id: r.id, date: formatarData(r.data), time: formatarHora(r.data),
+        type: 'pill', title: 'Medicação',
+        subtitle: `${r.nome} ${r.dosagem}`, color: Colors.warning,
+        categoria: 'medicacao' as const,
+      })),
+    ];
+
+    itens.sort((a, b) => b.id.localeCompare(a.id));
+    setRegistros(itens);
+  }
+
+  useFocusEffect(useCallback(() => { carregar(); }, []));
+
+  function confirmarExclusao(item: ItemHistorico) {
+    if (Platform.OS === 'web') {
+      if (window.confirm(`Deseja excluir "${item.title}"?`)) {
+        (async () => {
+          if (item.categoria === 'glicemia') await removerGlicemia(item.id);
+          else if (item.categoria === 'bucal') await removerSaudeBucal(item.id);
+          else if (item.categoria === 'atividade') await removerAtividade(item.id);
+          else if (item.categoria === 'medicacao') await removerMedicacao(item.id);
+          carregar();
+        })();
+      }
+      return;
+    }
+    Alert.alert(
+      'Excluir registro',
+      `Deseja excluir "${item.title}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir', style: 'destructive',
+          onPress: async () => {
+            if (item.categoria === 'glicemia') await removerGlicemia(item.id);
+            else if (item.categoria === 'bucal') await removerSaudeBucal(item.id);
+            else if (item.categoria === 'atividade') await removerAtividade(item.id);
+            else if (item.categoria === 'medicacao') await removerMedicacao(item.id);
+            carregar();
+          },
+        },
+      ]
+    );
+  }
+
+  const renderItem = ({ item }: { item: ItemHistorico }) => (
+    <TouchableOpacity
+      style={styles.recordItem}
+      onLongPress={() => confirmarExclusao(item)}
+      activeOpacity={0.7}
+    >
       <View style={styles.dateBadge}>
         <Text style={styles.dateText}>{item.date}</Text>
         <Text style={styles.timeText}>{item.time}</Text>
       </View>
-      
+
       <View style={[styles.iconCircle, { backgroundColor: `${item.color}15` }]}>
-        <MaterialCommunityIcons name={item.type} size={24} color={item.color} />
+        <MaterialCommunityIcons name={item.type as any} size={24} color={item.color} />
       </View>
 
       <View style={styles.infoContainer}>
@@ -45,8 +151,8 @@ export default function HistoryScreen() {
         <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
       </View>
 
-      <MaterialIcons name="chevron-right" size={24} color={Colors.placeholder} />
-    </View>
+      <MaterialIcons name="delete-outline" size={22} color={Colors.placeholder} onPress={() => confirmarExclusao(item)} />
+    </TouchableOpacity>
   );
 
   return (
@@ -63,7 +169,7 @@ export default function HistoryScreen() {
       </View>
 
       <FlatList
-        data={HISTORY_DATA}
+        data={registros}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}

@@ -20,6 +20,7 @@ import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
 import { Typography } from '../constants/Typography';
+import { salvarUsuario } from '../services/storage';
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -38,19 +39,16 @@ export default function SignUpScreen() {
       .replace(/(-\d{2})\d+?$/, '$1');
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!name || !email || cpf.length < 14 || !password) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
     setLoading(true);
-    
-    // Simulação de cadastro acadêmico
-    setTimeout(() => {
-      setLoading(false);
-      alert("Conta criada com sucesso!");
-      router.replace("/"); // Retorna para a tela de Login
-    }, 1500);
+    await salvarUsuario({ nome: name, email, cpf });
+    setLoading(false);
+    alert("Conta criada com sucesso!");
+    router.replace("/");
   };
 
   return (

@@ -14,11 +14,11 @@ import {
     View
 } from "react-native";
 
-// Importação do Design System
 import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
 import { Layout } from '../constants/Layout';
 import { Typography } from '../constants/Typography';
+import { salvarMedicacao } from '../services/storage';
 
 export default function AddMedicationScreen() {
   const router = useRouter();
@@ -26,19 +26,21 @@ export default function AddMedicationScreen() {
   const [dosage, setDosage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!medName || !dosage) {
       Alert.alert("Erro", "Por favor, preencha o nome do medicamento e a dosagem.");
       return;
     }
-
     setLoading(true);
-    // Simulação de salvamento no sistema
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert("Sucesso", "Medicação registrada com sucesso!");
-      router.back();
-    }, 1000);
+    await salvarMedicacao({
+      id: Date.now().toString(),
+      data: new Date().toISOString(),
+      nome: medName,
+      dosagem: dosage,
+    });
+    setLoading(false);
+    Alert.alert("Sucesso", "Medicação registrada com sucesso!");
+    router.back();
   };
 
   return (

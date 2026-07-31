@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { Keyboard, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import AnimatedButton from '../components/AnimatedButton';
 import { Colors } from '../constants/Colors';
-// Removi o SuccessModal temporariamente para você testar se o erro some
-// Se funcionar, a gente volta ele com o caminho certo
+import { salvarGlicemia } from '../services/storage';
 
 export default function AddGlucoseScreen() {
   const router = useRouter();
@@ -13,13 +12,17 @@ export default function AddGlucoseScreen() {
   const [period, setPeriod] = useState("Jejum");
   const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!value || isNaN(Number(value))) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      router.back();
-    }, 1000);
+    await salvarGlicemia({
+      id: Date.now().toString(),
+      data: new Date().toISOString(),
+      valor: Number(value),
+      periodo: period as 'Jejum' | 'Pós-refeição',
+    });
+    setLoading(false);
+    router.back();
   };
 
   return (

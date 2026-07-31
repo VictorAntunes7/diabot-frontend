@@ -59,6 +59,14 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
+          tabBarIcon: ({ color }) => <MaterialIcons name="smart-toy" size={24} color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Ajustes', // "Ajustes" cabe melhor na margem do que "Configurações"
