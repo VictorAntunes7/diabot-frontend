@@ -1,64 +1,50 @@
-# dIABot 🤖🩺
+# Welcome to your Expo app 👋
 
-App de saúde focado em diabetes e saúde bucal, desenvolvido com React Native + Expo. Protótipo funcional com dados salvos localmente via AsyncStorage.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Funcionalidades
+## Get started
 
-- **Login / Cadastro** — perfil salvo localmente, redirecionamento automático se já logado
-- **Home** — saudação personalizada, última glicemia registrada, notícias sobre diabetes e saúde bucal
-- **Registros** — adicionar e excluir registros de glicemia, saúde bucal, atividade física e medicação
-- **Histórico** — listagem de todos os registros com filtro por categoria e exclusão
-- **Calendário** — navegação por meses, criação de eventos (Consulta / Lembrete / Medicação), visualização de registros de saúde por dia
-- **Chat** — chatbot simulado com respostas por palavras-chave sobre diabetes, saúde bucal, exercício e medicamentos
-- **Ajustes** — exibição do perfil e logout
+1. Install dependencies
 
-## Estrutura
+   ```bash
+   npm install
+   ```
 
-```
-app/
-  (tabs)/
-    home.tsx
-    calendar.tsx
-    records.tsx
-    chat.tsx
-    settings.tsx
-  index.tsx         # Login
-  signup.tsx
-  history.tsx
-  add-glucose.tsx
-  add-oral-health.tsx
-  add-activity.tsx
-  add-medication.tsx
+2. Start the app
 
-services/
-  storage.ts        # AsyncStorage — todos os tipos e funções de dados
-  bot.ts            # Lógica do chatbot
-  noticias.ts       # Notícias mockadas
-```
+   ```bash
+   npx expo start
+   ```
 
-## Tecnologias
+In the output, you'll find options to open the app in a
 
-- [Expo](https://expo.dev) + React Native
-- AsyncStorage (`@react-native-async-storage/async-storage`)
-- Expo Router (file-based routing)
-- React Native Web (compatível com browser via Vercel)
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-## Como rodar
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Get a fresh project
+
+When you're ready, run:
 
 ```bash
-npm install
-npx expo start
+npm run reset-project
 ```
 
-Para abrir no browser:
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-```bash
-npx expo start --web
-```
+## Learn more
 
-## Observações técnicas
+To learn more about developing your project with Expo, look at the following resources:
 
-- `Alert.alert` não funciona no browser — todas as confirmações de exclusão usam `Platform.OS === 'web' ? window.confirm(...) : Alert.alert(...)`
-- Registros usam `unshift` no storage, então `lista[0]` é sempre o mais recente
-- Telas que precisam recarregar ao voltar usam `useFocusEffect` em vez de `useEffect`
-- Logout remove apenas o perfil do usuário, não os registros de saúde
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
