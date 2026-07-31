@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/Colors';
 
 export default function AnimatedButton({ title, onPress, loading }: any) {
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    ...(Platform.OS === 'web' ? { cursor: 'pointer' } as any : {}),
   },
   text: {
     color: Colors.white,

@@ -1,10 +1,21 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Tabs, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
-// Importação das suas constantes
 import { Colors } from '../../constants/Colors';
+import { Idioma, obterIdioma, traducoes } from '../../services/i18n';
 
 export default function TabLayout() {
+  const [idioma, setIdioma] = useState<Idioma>('pt');
+
+  useFocusEffect(
+    useCallback(() => {
+      obterIdioma().then(setIdioma);
+    }, [])
+  );
+
+  const t = traducoes[idioma];
+
   return (
     <Tabs
       screenOptions={{
@@ -15,11 +26,9 @@ export default function TabLayout() {
           backgroundColor: Colors.white,
           borderTopWidth: 1,
           borderTopColor: Colors.border,
-          // Ajuste fino de altura para comportar ícone + texto
-          height: Platform.OS === 'ios' ? 88 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          height: Platform.OS === 'ios' ? 88 : Platform.OS === 'web' ? 56 : 68,
+          paddingBottom: Platform.OS === 'ios' ? 28 : Platform.OS === 'web' ? 6 : 10,
           paddingTop: 8,
-          // Sombra para destacar a barra do fundo
           elevation: 10,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -3 },
@@ -27,49 +36,44 @@ export default function TabLayout() {
           shadowRadius: 5,
         },
         tabBarLabelStyle: {
-          // Fonte levemente menor (11) para evitar que nomes longos quebrem a margem
-          fontSize: 11, 
+          fontSize: 11,
           fontWeight: '600',
-          marginTop: -4, // Aproxima o texto do ícone para ganhar espaço
+          marginTop: -4,
         },
       }}>
-      
+
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Início', // "Início" é mais curto e evita aperto no rodapé
+          title: t.tabInicio,
           tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="calendar"
         options={{
-          title: 'Calendário',
+          title: t.tabCalendario,
           tabBarIcon: ({ color }) => <MaterialIcons name="event" size={24} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="records"
         options={{
-          title: 'Registros',
+          title: t.tabRegistros,
           tabBarIcon: ({ color }) => <MaterialIcons name="list-alt" size={24} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          title: t.tabChat,
           tabBarIcon: ({ color }) => <MaterialIcons name="smart-toy" size={24} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Ajustes', // "Ajustes" cabe melhor na margem do que "Configurações"
+          title: t.tabAjustes,
           tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
         }}
       />

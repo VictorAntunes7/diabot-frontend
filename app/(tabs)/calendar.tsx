@@ -20,6 +20,7 @@ import {
 import { Colors } from '../../constants/Colors';
 import { Layout } from '../../constants/Layout';
 import { Typography } from '../../constants/Typography';
+import { Idioma, Traducao, obterIdioma, traducoes } from '../../services/i18n';
 import {
   EventoCalendario,
   listarAtividades,
@@ -30,9 +31,6 @@ import {
   removerEvento,
   salvarEvento,
 } from '../../services/storage';
-
-const WEEK_DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-const TIPOS_EVENTO = ['Consulta', 'Lembrete', 'Medicação'] as const;
 
 type ItemAgenda = {
   id: string;
@@ -51,6 +49,7 @@ export default function CalendarScreen() {
   const [diasComRegistro, setDiasComRegistro] = useState<Set<number>>(new Set());
   const [agendaDia, setAgendaDia] = useState<ItemAgenda[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [idioma, setIdioma] = useState<Idioma>('pt');
 
   const [modalVisivel, setModalVisivel] = useState(false);
   const [tituloEvento, setTituloEvento] = useState('');
@@ -60,7 +59,9 @@ export default function CalendarScreen() {
   const mesAtual = dataBase.getMonth();
   const anoAtual = dataBase.getFullYear();
 
-  const nomeMes = dataBase.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const t: Traducao = traducoes[idioma];
+
+  const nomeMes = dataBase.toLocaleDateString(t.locale, { month: 'long', year: 'numeric' });
   const nomeMesFormatado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
 
   const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
@@ -70,8 +71,17 @@ export default function CalendarScreen() {
     ...Array.from({ length: diasNoMes }, (_, i) => i + 1),
   ];
 
+  const ehHoje = offsetMes === 0 && diaSelecionado === hojeReal.getDate();
+
+  function irParaHoje() {
+    setOffsetMes(0);
+    setDiaSelecionado(hojeReal.getDate());
+  }
+
   useFocusEffect(
     useCallback(() => {
+      obterIdioma().then(setIdioma);
+
       async function carregar() {
         const [glicemias, bucais, atividades, medicacoes, eventos] = await Promise.all([
           listarGlicemia(),
@@ -103,7 +113,7 @@ export default function CalendarScreen() {
           })
           .map(r => ({
             id: r.id,
-            hora: new Date(r.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            hora: new Date(r.data).toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' }),
             titulo: r.titulo,
             categoria: r.categoria,
             cor: r.cor,
@@ -113,7 +123,7 @@ export default function CalendarScreen() {
         setAgendaDia(itensDoDia);
       }
       carregar();
-    }, [offsetMes, diaSelecionado, refreshTrigger])
+    }, [offsetMes, diaSelecionado, refreshTrigger, idioma])
   );
 
   async function salvarNovoEvento() {
@@ -137,7 +147,7 @@ export default function CalendarScreen() {
       return;
     }
     Alert.alert('Excluir evento', `Deseja excluir "${titulo}"?`, [
-      { text: 'Cancelar', style: 'cancel' },
+      { text: t.cancelar, style: 'cancel' },
       {
         text: 'Excluir', style: 'destructive',
         onPress: async () => {
@@ -148,10 +158,7 @@ export default function CalendarScreen() {
     ]);
   }
 
-  const tituloSecao =
-    diaSelecionado === hojeReal.getDate() && offsetMes === 0
-      ? 'Registros de Hoje'
-      : `Registros do dia ${diaSelecionado}`;
+  const tituloSecao = ehHoje ? t.registrosHoje : `${t.registrosDia} ${diaSelecionado}`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -175,13 +182,20 @@ export default function CalendarScreen() {
         <View style={styles.calendarCard}>
           <View style={styles.calendarCardHeader}>
             <View style={styles.weekDaysRow}>
-              {WEEK_DAYS.map((day, index) => (
+              {t.diasSemana.map((day, index) => (
                 <Text key={index} style={styles.weekDayText}>{day}</Text>
               ))}
             </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => setModalVisivel(true)}>
-              <MaterialIcons name="add" size={20} color={Colors.white} />
-            </TouchableOpacity>
+            <View style={styles.calendarActions}>
+              {!ehHoje && (
+                <TouchableOpacity style={styles.hojeButton} onPress={irParaHoje}>
+                  <Text style={styles.hojeButtonText}>{t.hoje}</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity style={styles.addButton} onPress={() => setModalVisivel(true)}>
+                <MaterialIcons name="add" size={20} color={Colors.white} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.daysGrid}>
@@ -194,8 +208,16 @@ export default function CalendarScreen() {
               >
                 {dia !== null && (
                   <>
-                    <View style={[styles.dayCellInner, dia === diaSelecionado && styles.dayCellActive]}>
-                      <Text style={[styles.dayNumber, dia === diaSelecionado && styles.dayNumberActive]}>
+                    <View style={[
+                      styles.dayCellInner,
+                      dia === diaSelecionado && styles.dayCellActive,
+                      dia === hojeReal.getDate() && offsetMes === 0 && dia !== diaSelecionado && styles.dayCellHoje,
+                    ]}>
+                      <Text style={[
+                        styles.dayNumber,
+                        dia === diaSelecionado && styles.dayNumberActive,
+                        dia === hojeReal.getDate() && offsetMes === 0 && dia !== diaSelecionado && styles.dayNumberHoje,
+                      ]}>
                         {dia}
                       </Text>
                     </View>
@@ -218,7 +240,7 @@ export default function CalendarScreen() {
           {agendaDia.length === 0 ? (
             <View style={styles.emptyState}>
               <MaterialIcons name="event-note" size={36} color={Colors.border} />
-              <Text style={styles.emptyText}>Nenhum registro neste dia.</Text>
+              <Text style={styles.emptyText}>{t.nenhumRegistroDia}</Text>
             </View>
           ) : (
             <FlatList
@@ -257,11 +279,11 @@ export default function CalendarScreen() {
         >
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setModalVisivel(false)} />
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Novo evento — dia {diaSelecionado}</Text>
+            <Text style={styles.modalTitle}>{t.novoEvento} {diaSelecionado}</Text>
 
             <TextInput
               style={styles.modalInput}
-              placeholder="Título (ex: Consulta odontológica)"
+              placeholder={t.tituloEvento}
               placeholderTextColor={Colors.placeholder}
               value={tituloEvento}
               onChangeText={setTituloEvento}
@@ -269,23 +291,27 @@ export default function CalendarScreen() {
             />
 
             <View style={styles.tiposRow}>
-              {TIPOS_EVENTO.map(t => (
-                <TouchableOpacity
-                  key={t}
-                  onPress={() => setTipoEvento(t)}
-                  style={[styles.tipoBtn, tipoEvento === t && styles.tipoBtnActive]}
-                >
-                  <Text style={[styles.tipoText, tipoEvento === t && styles.tipoTextActive]}>{t}</Text>
-                </TouchableOpacity>
-              ))}
+              {t.tiposEvento.map((tipo, i) => {
+                const tiposBase: EventoCalendario['tipo'][] = ['Consulta', 'Lembrete', 'Medicação'];
+                const tipoBase = tiposBase[i];
+                return (
+                  <TouchableOpacity
+                    key={tipo}
+                    onPress={() => setTipoEvento(tipoBase)}
+                    style={[styles.tipoBtn, tipoEvento === tipoBase && styles.tipoBtnActive]}
+                  >
+                    <Text style={[styles.tipoText, tipoEvento === tipoBase && styles.tipoTextActive]}>{tipo}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             <TouchableOpacity style={styles.saveButton} onPress={salvarNovoEvento}>
-              <Text style={styles.saveButtonText}>Salvar</Text>
+              <Text style={styles.saveButtonText}>{t.salvar}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setModalVisivel(false)}>
-              <Text style={styles.cancelText}>Cancelar</Text>
+              <Text style={styles.cancelText}>{t.cancelar}</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -319,15 +345,26 @@ const styles = StyleSheet.create({
     width: `${100 / 7}%` as any, textAlign: 'center',
     color: Colors.placeholder, fontWeight: Typography.weight.bold, fontSize: 13,
   },
+  calendarActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  hojeButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  hojeButtonText: { fontSize: 12, color: Colors.primary, fontWeight: Typography.weight.bold },
   daysGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   dayCell: { width: `${100 / 7}%` as any, height: 44, alignItems: 'center', justifyContent: 'center' },
   dayCellInner: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   dayCellActive: { backgroundColor: Colors.primary },
+  dayCellHoje: { borderWidth: 1.5, borderColor: Colors.primary },
   dayNumber: { fontSize: 14, color: Colors.text },
   dayNumberActive: { color: Colors.white, fontWeight: Typography.weight.bold },
+  dayNumberHoje: { color: Colors.primary, fontWeight: Typography.weight.bold },
   dotIndicator: { width: 4, height: 4, borderRadius: 2, backgroundColor: Colors.primary, marginTop: 1 },
   dotIndicatorActive: { backgroundColor: Colors.white },
-  tasksSection: { paddingHorizontal: 25, marginTop: 20, paddingBottom: 40 },
+  tasksSection: { paddingHorizontal: 25, marginTop: 20, paddingBottom: 40, maxWidth: Platform.OS === 'web' ? 800 : undefined, width: '100%', alignSelf: 'center' },
   tasksSectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
   tasksTitle: { fontSize: Typography.size.subtitle, fontWeight: Typography.weight.bold, color: Colors.text },
   addButton: {
