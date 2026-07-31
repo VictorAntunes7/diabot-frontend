@@ -5,6 +5,8 @@
 🔗 **Demo ao vivo:** [diabot-demo.vercel.app](https://diabot-demo.vercel.app)
 
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/d04ba0b2-069a-4d28-837c-1b351a4e6a6e" />
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/58d8b42a-aa3d-4ed4-8dd7-d67ebecb6cdf" />
+
 
 ---
 
