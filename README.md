@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+# dIABot 🩺🦷
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> App mobile de monitoramento de saúde focado na relação entre Diabetes Mellitus e Saúde Bucal — projeto de extensão universitária (UFF).
 
-## Get started
+🔗 **Demo ao vivo:** [diabot-demo.vercel.app](https://diabot-demo.vercel.app)
 
-1. Install dependencies
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/d04ba0b2-069a-4d28-837c-1b351a4e6a6e" />
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 📌 Sobre o projeto
 
-   ```bash
-   npx expo start
-   ```
+Pessoas com diabetes têm risco significativamente maior de desenvolver problemas bucais (gengivite, periodontite), e o inverso também é verdade — inflamação bucal dificulta o controle glicêmico. A maioria dos pacientes desconhece essa relação.
 
-In the output, you'll find options to open the app in a
+O **dIABot** é um diário de saúde digital que permite ao usuário:
+- Registrar glicemia, saúde bucal, atividade física e medicações diariamente
+- Visualizar histórico e evolução em um calendário interativo
+- Conversar com um assistente virtual educativo sobre diabetes e saúde bucal
+- Acompanhar notícias sobre os dois temas
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Este repositório contém a versão de **piloto/validação** do projeto, focada em testar a experiência do usuário com os três públicos-alvo (pacientes, profissionais de saúde e gestores) antes de evoluir para uma arquitetura de produção completa.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🛠️ Stack técnica
 
-## Get a fresh project
+- **React Native** + **TypeScript**
+- **Expo Router** (roteamento baseado em arquivos)
+- **AsyncStorage** para persistência local (fase atual — ver seção de arquitetura abaixo)
+- Deploy web via **Expo Web Export** + **Vercel**
 
-When you're ready, run:
+## 🏗️ Decisão de arquitetura desta fase
+
+Este protótipo usa **armazenamento local no dispositivo** (AsyncStorage) em vez de um backend/banco de dados na nuvem. Foi uma decisão consciente para validar rapidamente a experiência do usuário e a aceitação da proposta de valor, sem a complexidade e o tempo de implementar infraestrutura de servidor nesta etapa.
+
+Isso implica:
+- Cada usuário tem seus dados isolados no próprio dispositivo/navegador
+- Não há sincronização entre dispositivos nesta versão
+- O app comunica isso claramente ao usuário (banner de "versão de demonstração")
+
+📍 Os próximos passos do projeto (backend real, banco de dados, etc.) estão descritos em [`ROADMAP.md`](./ROADMAP.md).
+
+## 🤖 Sobre o chatbot (dIABot)
+
+O assistente virtual do app é atualmente um **sistema baseado em regras/palavras-chave** — a mensagem do usuário é normalizada e comparada com um conjunto de tópicos pré-definidos sobre diabetes e saúde bucal, retornando respostas educativas relevantes. Não é um modelo de IA/machine learning nesta fase; essa evolução está prevista para uma etapa futura do projeto (ver ROADMAP).
+
+## 🚀 Como rodar localmente
 
 ```bash
-npm run reset-project
+# Clonar o repositório
+git clone https://github.com/VictorAntunesCastro/diabot-frontend.git
+cd diabot-frontend
+
+# Instalar dependências
+npm install
+
+# Rodar em modo desenvolvimento
+npx expo start
+```
+Depois, abra no Expo Go (celular) ou aperte `w` no terminal para abrir a versão web.
+
+### Gerar build web e publicar
+```bash
+npx expo export -p web
+cd dist
+vercel --prod
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📋 Funcionalidades
 
-## Learn more
+- [x] Cadastro simples (sem senha, sem atrito)
+- [x] Registro de glicemia, saúde bucal, atividade física e medicação
+- [x] Histórico completo com exclusão de registros
+- [x] Calendário interativo (navegação entre meses, criação de eventos/lembretes)
+- [x] Chat com assistente virtual educativo
+- [x] Notícias sobre diabetes e saúde bucal
+- [ ] Backend com banco de dados persistente (próxima fase)
+- [ ] Autenticação real (JWT)
+- [ ] Sincronização multiusuário/multidispositivo
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📄 Licença
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Este projeto está sob a licença MIT — veja o arquivo [`LICENSE`](./LICENSE) para mais detalhes.
 
-## Join the community
+## 👤 Autor
 
-Join our community of developers creating universal apps.
+Desenvolvido por **Victor Castro** como parte de projeto de extensão da UFF.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[LinkedIn](https://www.linkedin.com/in/victorantunescastro/) · [GitHub](https://github.com/VictorAntunesCastro)
