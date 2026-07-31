@@ -2,50 +2,42 @@ import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-
-// Importação das suas constantes de cores
+import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import { Colors } from '../constants/Colors';
 
 export const unstable_settings = {
-  // Garante que o botão de voltar não quebre o fluxo das abas
   anchor: '(tabs)',
 };
 
 export default function RootLayout() {
-  // Criamos um tema customizado baseado no DefaultTheme para o DIABot
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const style = document.createElement('style');
+      style.textContent = `body { padding-bottom: env(safe-area-inset-bottom); }`;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   const DiabotTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: Colors.background, // Usa o verde #b3e6b3 definido
+      background: Colors.background,
     },
   };
 
   return (
     <ThemeProvider value={DiabotTheme}>
-      {/* Escondemos o cabeçalho global para usar nossos headers customizados */}
       <Stack screenOptions={{ headerShown: false }}>
-        {/* Tela inicial (Login) */}
-        <Stack.Screen name="index" /> 
-        
-        {/* Tela de Cadastro (Adicionada conforme seu Explorer) */}
-        <Stack.Screen name="signup" /> 
-        
-        {/* Grupo de Abas principais */}
+        <Stack.Screen name="index" />
+        <Stack.Screen name="signup" />
         <Stack.Screen name="(tabs)" />
-        
-        {/* Modais de sistema ou alertas */}
-        <Stack.Screen 
-          name="modal" 
-          options={{ 
-            presentation: 'modal', 
-            headerShown: true, 
-            title: 'Informação' 
-          }} 
+        <Stack.Screen
+          name="modal"
+          options={{ presentation: 'modal', headerShown: true, title: 'Informação' }}
         />
       </Stack>
-      
-      {/* StatusBar fixa em 'dark' para os ícones ficarem pretos sobre o fundo verde claro */}
       <StatusBar style="dark" />
     </ThemeProvider>
   );

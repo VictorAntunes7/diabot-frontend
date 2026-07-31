@@ -1,9 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { Idioma, obterIdioma, traducoes } from '../../services/i18n';
+
+const isNarrow = Platform.OS === 'web' && Dimensions.get('window').width < 500;
 
 export default function TabLayout() {
   const [idioma, setIdioma] = useState<Idioma>('pt');
@@ -15,6 +18,8 @@ export default function TabLayout() {
   );
 
   const t = traducoes[idioma];
+  const insets = useSafeAreaInsets();
+  const bottomInset = isNarrow ? insets.bottom : 0;
 
   return (
     <Tabs
@@ -26,15 +31,16 @@ export default function TabLayout() {
           backgroundColor: Colors.white,
           borderTopWidth: 1,
           borderTopColor: Colors.border,
-          height: Platform.OS === 'ios' ? 88 : Platform.OS === 'web' ? 56 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 28 : Platform.OS === 'web' ? 6 : 10,
-          paddingTop: 8,
+          height: Platform.OS === 'ios' ? 88 : isNarrow ? 64 + bottomInset : Platform.OS === 'web' ? 60 : 68,
+          paddingBottom: Platform.OS === 'ios' ? 28 : isNarrow ? 10 + bottomInset : Platform.OS === 'web' ? 8 : 10,
+          paddingTop: isNarrow ? 10 : 8,
           elevation: 10,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -3 },
           shadowOpacity: 0.1,
           shadowRadius: 5,
         },
+        tabBarShowLabel: !isNarrow,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
