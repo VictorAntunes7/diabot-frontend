@@ -46,8 +46,8 @@ O assistente virtual do app é atualmente um **sistema baseado em regras/palavra
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/VictorAntunesCastro/diabot-frontend.git
-cd diabot-frontend
+git clone https://github.com/VictorAntunesCastro/diabot.git
+cd diabot
 
 # Instalar dependências
 npm install
