@@ -167,7 +167,6 @@ export default function CalendarScreen() {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Navegação de mês */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setOffsetMes(offsetMes - 1)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <MaterialIcons name="chevron-left" size={28} color={Colors.text} />
@@ -178,7 +177,6 @@ export default function CalendarScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Grade do calendário */}
         <View style={styles.calendarCard}>
           <View style={styles.calendarCardHeader}>
             <View style={styles.weekDaysRow}>
@@ -231,7 +229,6 @@ export default function CalendarScreen() {
           </View>
         </View>
 
-        {/* Lista do dia selecionado */}
         <View style={styles.tasksSection}>
           <View style={styles.tasksSectionHeader}>
             <Text style={styles.tasksTitle}>{tituloSecao}</Text>
@@ -271,7 +268,6 @@ export default function CalendarScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal de novo evento */}
       <Modal visible={modalVisivel} transparent animationType="slide" onRequestClose={() => setModalVisivel(false)}>
         <KeyboardAvoidingView
           style={styles.modalOverlay}

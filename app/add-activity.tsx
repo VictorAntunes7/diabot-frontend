@@ -20,7 +20,6 @@ export default function AddActivityScreen() {
 
   const t: Traducao = traducoes[idioma];
 
-  // Mapeia label traduzido → valor interno fixo em PT para salvar consistente
   const tiposAtividade = [
     { label: t.caminhada, valor: 'Caminhada', icon: 'walk' },
     { label: t.corrida, valor: 'Corrida', icon: 'run' },

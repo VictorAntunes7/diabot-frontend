@@ -71,7 +71,6 @@ export default function SettingsScreen() {
       >
         <Text style={styles.title}>{t.configuracoes}</Text>
 
-        {/* SEÇÃO 1: PERFIL */}
         <View style={styles.sectionCard}>
           <View style={styles.profileRow}>
             <View style={styles.avatar}>
@@ -84,7 +83,6 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* SEÇÃO 2: PREFERÊNCIAS */}
         <Text style={styles.sectionLabel}>{t.preferencias}</Text>
         <View style={styles.sectionCard}>
           <SettingItem
@@ -110,7 +108,6 @@ export default function SettingsScreen() {
           />
         </View>
 
-        {/* SEÇÃO 3: SOBRE O DIABOT */}
         <Text style={styles.sectionLabel}>{t.sobreApp}</Text>
         <View style={styles.sectionCard}>
           <SettingItem icon="info" label={t.versaoApp} value="1.0.0" />
@@ -129,7 +126,6 @@ export default function SettingsScreen() {
         <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* Modal de seleção de idioma */}
       <Modal visible={modalIdioma} transparent animationType="fade" onRequestClose={() => setModalIdioma(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setModalIdioma(false)}>
           <View style={styles.modalBox}>
